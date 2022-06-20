@@ -40,3 +40,5 @@ val settings =
 
 lazy val root = (project in file("."))
   .settings(settings: _*)
+
+addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
