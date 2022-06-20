@@ -15,26 +15,21 @@ object Main
       "0.0.1"
     ) {
 
-  var colorStack = List.empty[ColorCode]
+  var colorStack = List.empty[Color]
+
+  val palette = Palette.ansiDefault
 
   private def colorize(c: Char): String = {
     val openChars = Set('[', '(', '{')
     val closeChars = Set(']', ')', '}')
     c match {
       case ch if openChars.contains(ch) =>
-        if (colorStack.isEmpty) {
-          val nextColor = ANSI.green
-          colorStack = colorStack :+ nextColor
-          nextColor.colorText(s"$ch")
-        } else {
-          val lastColor = colorStack.last
-          val nextColor = lastColor.next
-          colorStack = colorStack :+ nextColor
-          nextColor.colorText(s"$ch")
-        }
+        val nextColor = palette.colors.next
+        colorStack = colorStack :+ nextColor
+        nextColor.colorText(s"$ch")
       case ch if closeChars.contains(ch) =>
         if (colorStack.isEmpty) {
-          ANSI.red.colorText(s"$ch")
+          palette.error.colorText(s"$ch")
         } else {
           val nextColor = colorStack.last
           colorStack = colorStack.dropRight(1)
