@@ -16,7 +16,6 @@ addCommandAlias(
   "ci-test",
   ";scalafmtCheckAll; scalafmtSbtCheck; test"
 )
-addCommandAlias("ci-publish", "github; ci-release")
 
 val settings =
   Seq(
