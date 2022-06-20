@@ -2,6 +2,7 @@ package io.github.jisantuc.rbparencli
 
 import cats.effect.ExitCode
 import cats.effect.IO
+import cats.syntax.apply._
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
 import fs2.io.file.Files
@@ -17,9 +18,7 @@ object Main
 
   var colorStack = List.empty[Color]
 
-  val palette = Palette.ansiDefault
-
-  private def colorize(c: Char): String = {
+  private def colorize(palette: Palette)(c: Char): String = {
     val openChars = Set('[', '(', '{')
     val closeChars = Set(']', ')', '}')
     c match {
@@ -39,22 +38,25 @@ object Main
     }
   }
 
-  override def main: Opts[IO[ExitCode]] = CLIOpts.inFile.map { inFileO =>
-    val MaxSafeLong = 9007199254740991L
-    val inputCharStream = inFileO match {
-      case Some(inFilePath) =>
-        Files[IO].readRange(Path(inFilePath), 64 * 1024, 0, MaxSafeLong)
-      case None =>
-        fs2.io.stdin[IO](16 * 16)
-    }
+  override def main: Opts[IO[ExitCode]] =
+    (CLIOpts.inFile, CLIOpts.palette).mapN { case (inFileO, palette) =>
+      val MaxSafeLong = 9007199254740991L
+      val inputCharStream = inFileO match {
+        case Some(inFilePath) =>
+          Files[IO].readRange(Path(inFilePath), 64 * 1024, 0, MaxSafeLong)
+        case None =>
+          fs2.io.stdin[IO](16 * 16)
+      }
 
-    inputCharStream
-      .map({ b => colorize(b.toChar) })
-      .flatMap(s => fs2.Stream.emits(s.getBytes()).covary[IO])
-      .through(fs2.io.stdout[IO])
-      .compile
-      .drain
-      .as(ExitCode.Success)
-  }
+      val colorizer = (b: Byte) => colorize(palette)(b.toChar)
+
+      inputCharStream
+        .map(colorizer)
+        .flatMap(s => fs2.Stream.emits(s.getBytes()).covary[IO])
+        .through(fs2.io.stdout[IO])
+        .compile
+        .drain
+        .as(ExitCode.Success)
+    }
 
 }
