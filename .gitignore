@@ -73,5 +73,3 @@ tags
 # Direnv
 
 .direnv
-
-flake.lock
