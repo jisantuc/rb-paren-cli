@@ -17,8 +17,6 @@ addCommandAlias(
   ";scalafmtCheckAll; scalafmtSbtCheck; test"
 )
 
-enablePlugins(GraalVMNativeImagePlugin)
-
 val settings =
   Seq(
     organization := "io.github.jisantuc",
@@ -27,17 +25,26 @@ val settings =
       "MIT" -> url("https://opensource.org/licenses/MIT")
     ),
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % Version.fs2,
-      "co.fs2" %% "fs2-io" % Version.fs2,
-      "com.monovore" %% "decline-effect" % Version.decline,
-      "com.monovore" %% "decline" % Version.decline,
-      "org.scalameta" %% "munit-scalacheck" % Version.munit % Test,
-      "org.scalameta" %% "munit" % Version.munit % Test,
-      "org.typelevel" %% "cats-core" % Version.cats,
-      "org.typelevel" %% "cats-effect" % Version.catsEffect,
-      "org.typelevel" %% "cats-parse" % Version.catsParse
+      "co.fs2" %%% "fs2-core" % Version.fs2,
+      "co.fs2" %%% "fs2-io" % Version.fs2,
+      "com.monovore" %%% "decline-effect" % Version.decline,
+      "com.monovore" %%% "decline" % Version.decline,
+      "org.scalameta" %%% "munit-scalacheck" % Version.munit % Test,
+      "org.scalameta" %%% "munit" % Version.munit % Test,
+      "org.typelevel" %%% "cats-core" % Version.cats,
+      "org.typelevel" %%% "cats-effect" % Version.catsEffect,
+      "org.typelevel" %%% "cats-parse" % Version.catsParse
     ),
     run / fork := true,
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
+  )
+
+lazy val root =
+  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("."))
+    .settings(settings: _*)
+
+lazy val rootJVM = root.jvm
+  .settings(
     graalVMNativeImageOptions ++= Seq(
       // prevents image creation and prints more output when bundling
       // is *waves hands* incomplete
@@ -50,8 +57,4 @@ val settings =
     ),
     GraalVMNativeImage / name := "rainbow-parens"
   )
-
-lazy val root = (project in file("."))
-  .settings(settings: _*)
-
-addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
+  .enablePlugins(GraalVMNativeImagePlugin)
