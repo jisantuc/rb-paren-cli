@@ -1,3 +1,5 @@
+import sys.env
+
 name := """rb-paren-cli"""
 organization := "io.github.jisantuc"
 
@@ -48,7 +50,9 @@ val settings =
       // provides nicer logging output when exceptions are encountered
       "-H:+ReportExceptionStackTraces"
     ),
-    GraalVMNativeImage / name := "rainbow-parens"
+    GraalVMNativeImage / name := env
+      .get("RUNNER_OS")
+      .fold("rainbow-parens")(os => s"rainbow-parens-$os")
   )
 
 lazy val root = (project in file("."))
