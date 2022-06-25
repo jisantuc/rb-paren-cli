@@ -7,10 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [ubuntu-latest]
+        # os: [macos-latest, ubuntu-latest]
     permissions:
       contents: write
     steps:
@@ -22,7 +23,9 @@ jobs:
         run: nix-shell --run "sbt graalvm-native-image:packageBin"
       - name: Copy result to system-suffixed name
         run: |
-          cp ./target/graalvm-native-image/rainbow-parens ./rainbow-parens-${RUNNER_ARCH}-${RUNNER_OS}
+          cp ./target/graalvm-native-image/rainbow-parens ./rainbow-parens-$env:RUNNER_ARCH-$env:RUNNER_OS
+      - name: List cwd
+        run: ls
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "./rainbow-parens-$env:RUNNER_ARCH-$env:RUNNER_OS"
