@@ -6,11 +6,8 @@ on:
       - "*"
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
+  build-linux:
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -18,15 +15,11 @@ jobs:
       - uses: cachix/install-nix-action@v17
         with:
           nix_path: nixpkgs=channel:nixos-21.11
-      - uses: maxim-lobanov/setup-xcode@v1
-        if: matrix.os == 'macOS-latest'
-        with:
-          xcode-version: latest-stable
       - name: Build binary
         run: nix-shell --run "sbt graalvm-native-image:packageBin"
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "./target/graalvm-native-image/rainbow-parens-${RUNNER_OS}"
+          artifacts: "./target/graalvm-native-image/rainbow-parens"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           artifactErrorsFailBuild: true
