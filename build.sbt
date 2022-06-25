@@ -16,7 +16,7 @@ lazy val Version = new {
 
 addCommandAlias(
   "ci-test",
-  ";scalafmtCheckAll; scalafmtSbtCheck; test"
+  ";scalafmtCheckAll; scalafmtSbtCheck; rootJVM/test; rootJS/test"
 )
 
 val settings =
