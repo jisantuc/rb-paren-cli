@@ -29,3 +29,4 @@ jobs:
           artifacts: "./target/graalvm-native-image/rainbow-parens-${RUNNER_OS}"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
+          artifactErrorsFailBuild: true
