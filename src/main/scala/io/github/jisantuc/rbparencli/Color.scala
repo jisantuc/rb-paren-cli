@@ -33,17 +33,23 @@ object Palette {
 
   implicit val argPalette: Argument[Palette] = new Argument[Palette] {
 
+    @unchecked
     override def read(string: String): ValidatedNel[String, Palette] = {
       val comma = Parser.char(',')
       val rgbParser = (for {
         _ <- Parser.string("rgb(").void
-        NonEmptyList(r, List(g, b)) <- Numbers.bigInt
+        (r, g, b) <- Numbers.bigInt
           .repSep(
             3,
             3,
             comma
           )
           .map(_.map(_.toInt))
+          .flatMap {
+            case NonEmptyList(r, List(g, b)) =>
+              Parser.pure((r, g, b))
+            case _ => Parser.fail
+          }
         _ <- Parser.string(")").void
       } yield RGB(r, g, b)).repSep(2, comma)
       val hexParser =
@@ -52,8 +58,10 @@ object Palette {
           .map(_.toList.mkString(""))
           .map(Integer.parseInt(_, 16))
           .rep(3, 3)
-          .map { case NonEmptyList(r, List(g, b)) =>
-            RGB(r, g, b)
+          .flatMap {
+            case NonEmptyList(r, List(g, b)) =>
+              Parser.pure(RGB(r, g, b))
+            case _ => Parser.fail
           }
           .repSep(2, comma)
       rgbParser

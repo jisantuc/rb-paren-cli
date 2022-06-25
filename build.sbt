@@ -3,6 +3,8 @@ organization := "io.github.jisantuc"
 
 ThisBuild / githubOrganization := "io.github.jisantuc"
 
+ThisBuild / scalaVersion := "2.13.8"
+
 lazy val Version = new {
   val cats = "2.7.0"
   val catsEffect = "3.3.6"
@@ -42,6 +44,11 @@ val settings =
 lazy val root =
   (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("."))
     .settings(settings: _*)
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true,
+      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+      Compile / fullOptJS / artifactPath := baseDirectory.value / "rainbow-parens.js"
+    )
 
 lazy val rootJVM = root.jvm
   .settings(

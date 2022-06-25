@@ -73,3 +73,8 @@ tags
 # Direnv
 
 .direnv
+
+# Cross project directories
+
+.js
+.jvm
