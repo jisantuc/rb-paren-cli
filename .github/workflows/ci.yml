@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.0.2
-      - name: Setup Scala
-        uses: olafurpg/setup-scala@v13
-      - name: Run checks
-        run: sbt ci-test
+      - uses: cachix/install-nix-action@v17
+        with:
+          nix_path: nixpkgs=channel:nixos-21.11
+      - name: run tests
+        run: nix-shell --run "sbt ci-test"

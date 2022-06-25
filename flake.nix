@@ -1,5 +1,5 @@
 {
-  description = "An sbt plugin to monitor energy usage during command runs";
+  description = "A CLI for adding rainbow parentheses to streaming input";
 
   # Nixpkgs / NixOS version to use.
   inputs.nixpkgs.url = "nixpkgs/nixos-21.11";
@@ -23,28 +23,34 @@
     {
 
       # Provide some binary packages for selected system types.
-      packages = forAllSystems (system:
-        let
-          pkgs = nixpkgsFor.${system};
-          sbt = pkgs.sbt.override { jre = pkgs.openjdk17; };
-        in
-        {
-          energymonitor-plugin = pkgs.stdenv.mkDerivation {
-            name = "rb-paren-cli";
-            buildInputs = [ sbt ];
-            src = ./.;
-          };
-        });
+      # A single package will automatically be the default package
+      packages = forAllSystems
+        (system:
+          let
+            pkgs = nixpkgsFor.${system};
+            graalvm = pkgs.graalvm11-ce;
+            sbt = pkgs.sbt.override { jre = pkgs.openjdk11; };
+            nodejs = pkgs.nodejs-17_x;
+          in
+          {
+            rainbow-parens = pkgs.stdenv.mkDerivation
+              {
+                name = "rainbow-parens";
+                buildInputs = [ sbt graalvm ];
+                src = ./.;
+              };
 
-      # The default package for 'nix build'. This makes sense if the
-      # flake provides only one package or there is a clear "main"
-      # package.
-      defaultPackage = forAllSystems (system: self.packages.${system}.energymonitor-plugin);
+            sbt = sbt;
+            graalvm = graalvm;
+          });
       devShell = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
         in
         pkgs.mkShell {
-          buildInputs = with pkgs; [ sbt ];
+          buildInputs = with pkgs; [
+            self.packages.${system}.sbt
+            self.packages.${system}.graalvm
+          ];
         });
 
     };

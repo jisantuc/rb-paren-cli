@@ -17,6 +17,8 @@ addCommandAlias(
   ";scalafmtCheckAll; scalafmtSbtCheck; test"
 )
 
+enablePlugins(GraalVMNativeImagePlugin)
+
 val settings =
   Seq(
     organization := "io.github.jisantuc",
@@ -35,7 +37,18 @@ val settings =
       "org.typelevel" %% "cats-effect" % Version.catsEffect,
       "org.typelevel" %% "cats-parse" % Version.catsParse
     ),
-    run / fork := true
+    run / fork := true,
+    graalVMNativeImageOptions ++= Seq(
+      // prevents image creation and prints more output when bundling
+      // is *waves hands* incomplete
+      "--no-fallback",
+      // creates basically a fat jar instead of a binary that requires
+      // path / classpath information to execute
+      "--static",
+      // provides nicer logging output when exceptions are encountered
+      "-H:+ReportExceptionStackTraces"
+    ),
+    GraalVMNativeImage / name := "rainbow-parens"
   )
 
 lazy val root = (project in file("."))
