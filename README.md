@@ -19,6 +19,42 @@ CLI lets you add rainbow brackets to any file or streaming input.
 
 [![asciicast](https://asciinema.org/a/W4h5iyicNf2At4SEGlkqHxgJM.svg)](https://asciinema.org/a/W4h5iyicNf2At4SEGlkqHxgJM)
 
+## Installation
+
+A Linux-compatible binary and NodeJS script will be published for each 
+release. The NodeJS script should work for everyone and is smaller than 
+the published binary by a considerable amount but also requires NodeJS.
+
+### Linux Binary
+
+If you're on a Linux system, you can download the binary and put it 
+somewhere on your path and you'll be all set, e.g.:
+
+```bash
+# copy the actual URL from the latest release
+$ wget https://github.com/jisantuc/rb-paren-cli/... 
+$ cp rainbow-parens /usr/local/bin/
+```
+
+### NodeJS script
+
+If you're not on a Linux system or your Linux system is incompatible with
+the compiled binary, you can use the NodeJS script. To do so, download 
+the script somewhere sensible then create an alias that invokes it with
+NodeJS. For example:
+
+```bash
+# copy the actual URL from the latest release
+$ wget \
+    -o $HOME/.local/bin/rainbow-parens.js \
+    https://github.com/jisantuc/rb-paren-cli/...
+# or .bash_profile, or .bashrc, or wherever it is you configure aliases
+# for your shell sessions
+$ echo 'alias rainbow-parens="node $HOME/.local/bin/rainbow-parens.js"' >> ~/.zshrc
+```
+
+Then you can use `rainbow-parens` normally.
+
 ## Color configuration
 
 The default rainbow uses ANSI red for un-matched closing characters and
