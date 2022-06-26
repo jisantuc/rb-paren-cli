@@ -6,7 +6,7 @@ on:
       - "*"
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,11 +15,11 @@ jobs:
       - uses: cachix/install-nix-action@v17
         with:
           nix_path: nixpkgs=channel:nixos-21.11
-      - name: Build binary
-        run: nix-shell --run "sbt graalvm-native-image:packageBin"
+      - name: Build binary and JS artifact
+        run: nix-shell --run "sbt 'graalvm-native-image:packageBin;fullOptJS'"
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "./target/graalvm-native-image/rainbow-parens"
+          artifacts: "./.jvm/target/graalvm-native-image/rainbow-parens,.js/rainbow-parens.js"
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           artifactErrorsFailBuild: true

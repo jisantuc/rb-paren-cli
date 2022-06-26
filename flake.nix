@@ -42,6 +42,7 @@
 
             sbt = sbt;
             graalvm = graalvm;
+            nodejs = nodejs;
           });
       devShell = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
@@ -50,6 +51,7 @@
           buildInputs = with pkgs; [
             self.packages.${system}.sbt
             self.packages.${system}.graalvm
+            self.packages.${system}.nodejs
           ];
         });
 
