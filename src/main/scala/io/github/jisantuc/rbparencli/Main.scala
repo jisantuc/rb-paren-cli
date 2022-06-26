@@ -10,7 +10,7 @@ import fs2.io.file.Path
 
 object Main
     extends CommandIOApp(
-      "rb-paren-cli",
+      "rainbow-parens",
       "Rainbow-ize parentheses, braces, and brackets in streaming input",
       true,
       "0.0.1"
