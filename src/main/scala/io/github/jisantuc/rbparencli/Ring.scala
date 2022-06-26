@@ -8,6 +8,8 @@ trait Ring[A] {
   protected[rbparencli] val underlying: List[A]
 
   def next: A
+
+  def previous: A
 }
 
 object Ring {
@@ -25,6 +27,11 @@ object Ring {
       val out = underlying(idx)
       cursor += 1
       out
+    }
+
+    def previous = {
+      cursor -= 1
+      underlying(idx)
     }
   }
 

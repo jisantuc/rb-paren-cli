@@ -16,22 +16,22 @@ object Main
       "0.0.1"
     ) {
 
-  var colorStack = List.empty[Color]
+  private var openCount: Int = 0
 
   private def colorize(palette: Palette)(c: Char): String = {
     val openChars = Set('[', '(', '{')
     val closeChars = Set(']', ')', '}')
     c match {
       case ch if openChars.contains(ch) =>
+        openCount += 1
         val nextColor = palette.colors.next
-        colorStack = colorStack :+ nextColor
         nextColor.colorText(s"$ch")
       case ch if closeChars.contains(ch) =>
-        if (colorStack.isEmpty) {
+        if (openCount == 0) {
           palette.error.colorText(s"$ch")
         } else {
-          val nextColor = colorStack.last
-          colorStack = colorStack.dropRight(1)
+          openCount -= 1
+          val nextColor = palette.colors.previous
           nextColor.colorText(s"$ch")
         }
       case c => s"$c"
