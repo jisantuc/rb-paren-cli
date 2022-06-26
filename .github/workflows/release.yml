@@ -16,7 +16,7 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-21.11
       - name: Build binary and JS artifact
-        run: nix-shell --run "sbt graalvm-native-image:packageBin;fullOptJS"
+        run: nix-shell --run "sbt 'graalvm-native-image:packageBin;fullOptJS'"
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "./.jvm/target/graalvm-native-image/rainbow-parens,.js/rainbow-parens.js"
